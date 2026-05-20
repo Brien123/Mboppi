@@ -1,0 +1,16 @@
+Hello {{ user_name }},
+
+We were unable to process your installment payment for order #{{ order_id }}.
+
+Payment Failed
+Reason: {{ reason }}
+
+Order Details:
+- Amount: {{ currency }} {{ amount }}
+- Due Date: {{ due_date }}
+
+Please log in to the app to update your payment method or retry the payment manually to avoid any service interruptions.
+
+If you have already resolved this issue, please ignore this email.
+
+Thank you for choosing Slash!

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .footer { font-size: 12px; color: #999; text-align: center; margin-top: 30px; }
+        {% block extra_style %}{% endblock %}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Welcome to Slash</h2>
+        </div>
+        
+        {% block email_content %}{% endblock %}
+
+        <div class="footer">
+            &copy; {% now "Y" %} Slash. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+Hello {{ user.first_name }},
+
+Your KYC verification status has been updated to: {{ status }}
+
+{% if notes %}
+Feedback from our team:
+{{ notes }}
+{% endif %}
+
+{% if status == 'APPROVED' %}
+Your profile is now complete. You can enjoy full access to the Slash platform.
+{% elif status == 'REJECTED' %}
+Please review the feedback above and re-upload the necessary documents in your profile settings to continue.
+{% endif %}
+
+Best regards,
+The Slash Team

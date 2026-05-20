@@ -1,0 +1,14 @@
+{% autoescape off %}
+Hello {{ user.first_name|default:"User" }},
+
+You recently requested to change the email address on your Slash account.
+
+Your confirmation code is: {{ otp_code }}
+
+This code will expire in 10 minutes.
+
+If you did not request this change, please ignore this email.
+
+Best regards,
+The Slash Team
+{% endautoescape %}

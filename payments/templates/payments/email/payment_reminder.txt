@@ -1,0 +1,12 @@
+Hello {{ user_name }},
+
+This is a friendly reminder that your installment for order #{{ order_id }} is due tomorrow, {{ due_date }}.
+
+Amount Due: {{ currency }} {{ amount }}
+Due Date: {{ due_date }}
+
+Your payment will be automatically processed using your saved payment method.
+
+If you would like to pay off the remaining balance of your order immediately, you can do so by logging into the app.
+
+Thank you for choosing Slash!

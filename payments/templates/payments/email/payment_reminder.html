@@ -1,0 +1,18 @@
+{% extends "authentication/email/base_email.html" %}
+{% load i18n %}
+
+{% block email_content %}
+<p>{% blocktranslate %}Hello {{ user_name }},{% endblocktranslate %}</p>
+<p>{% blocktranslate %}This is a friendly reminder that your installment for order <strong>#{{ order_id }}</strong> is due tomorrow, <strong>{{ due_date }}</strong>.{% endblocktranslate %}</p>
+
+<div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <p style="margin: 0;"><strong>{% translate "Amount Due:" %}</strong> {{ currency }} {{ amount }}</p>
+    <p style="margin: 5px 0 0 0;"><strong>{% translate "Due Date:" %}</strong> {{ due_date }}</p>
+</div>
+
+<p>{% translate "Your payment will be automatically processed using your saved payment method." %}</p>
+
+<p>{% translate "If you would like to pay off the remaining balance of your order immediately, you can do so by logging into the app." %}</p>
+
+<p>{% translate "Thank you for choosing Slash!" %}</p>
+{% endblock %}

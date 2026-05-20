@@ -1,0 +1,23 @@
+{% extends "authentication/email/base_email.html" %}
+{% load i18n %}
+
+{% block email_content %}
+<p>{% blocktranslate %}Hello {{ user_name }},{% endblocktranslate %}</p>
+<p>{% blocktranslate %}We were unable to process your installment payment for order <strong>#{{ order_id }}</strong>.{% endblocktranslate %}</p>
+
+<div style="background-color: #fff5f5; border-left: 4px solid #f56565; padding: 15px; margin: 20px 0;">
+    <p style="margin: 0; color: #c53030;"><strong>{% translate "Payment Failed" %}</strong></p>
+    <p style="margin: 5px 0 0 0;"><strong>{% translate "Reason:" %}</strong> {{ reason }}</p>
+</div>
+
+<div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <p style="margin: 0;"><strong>{% translate "Amount:" %}</strong> {{ currency }} {{ amount }}</p>
+    <p style="margin: 5px 0 0 0;"><strong>{% translate "Due Date:" %}</strong> {{ due_date }}</p>
+</div>
+
+<p>{% translate "Please log in to the app to update your payment method or retry the payment manually to avoid any service interruptions." %}</p>
+
+<p>{% translate "If you have already resolved this issue, please ignore this email." %}</p>
+
+<p>{% translate "Thank you for choosing Slash!" %}</p>
+{% endblock %}

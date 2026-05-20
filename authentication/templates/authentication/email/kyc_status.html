@@ -1,0 +1,24 @@
+{% extends "authentication/email/base_email.html" %}
+
+{% block email_content %}
+<div style="padding: 10px; text-align: left;">
+    <h2 style="color: #000; margin-top: 0;">KYC Verification Update</h2>
+    <p>Hello {{ user.first_name }},</p>
+    <p>Your KYC verification status has been updated to: <strong>{{ status }}</strong></p>
+    
+    {% if notes %}
+    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid #4F46E5; margin-top: 20px;">
+        <p style="margin: 0; font-weight: bold; color: #555;">Feedback from our team:</p>
+        <p style="margin: 10px 0 0 0; color: #333;">{{ notes }}</p>
+    </div>
+    {% endif %}
+
+    {% if status == 'APPROVED' %}
+    <p style="margin-top: 20px;">Great news! Your profile is now complete. You can enjoy full access to all Slash features.</p>
+    {% elif status == 'REJECTED' %}
+    <p style="margin-top: 20px;">Please review the feedback above. You can re-upload any necessary documents in your profile settings to continue the process.</p>
+    {% endif %}
+
+    <p style="margin-top: 30px;">Best regards,<br>The Slash Team</p>
+</div>
+{% endblock %}
