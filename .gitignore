@@ -7,7 +7,6 @@ venv/
 .DS_Store
 .idea/
 .vscode/
-.env.example
 celerybeat-schedule
 *celery*.pyc
 scratch/
@@ -15,4 +14,3 @@ media/
 __pycache__/
 .kilo/
 .github/
-deploy.sh
