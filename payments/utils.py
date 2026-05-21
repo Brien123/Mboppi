@@ -59,9 +59,7 @@ class FlutterwaveService:
         except phonenumbers.NumberParseException:
             return None
 
-    # ----------------------------------------------------------------------
     # Encryption helpers (only used when encrypt_locally=True)
-    # ----------------------------------------------------------------------
     def encrypt_field(self, plaintext: str, nonce: str) -> str:
         """AES-256-GCM encryption. Nonce must be exactly 12 characters."""
         if len(nonce) != 12:
@@ -77,9 +75,8 @@ class FlutterwaveService:
         """Generate a 12-character alphanumeric nonce."""
         return ''.join(random.choices(string.ascii_letters + string.digits, k=12))
 
-    # ----------------------------------------------------------------------
+
     # Customer Management Methods
-    # ----------------------------------------------------------------------
     def create_customer_object(self, email: str, phone_string: str = None, first_name: str = None,
                                last_name: str = None, trace_id: str = None, access_token: str = None):
         """
@@ -289,9 +286,7 @@ class FlutterwaveService:
         response = requests.delete(url=url, headers=headers)
         return response.json()
 
-    # ----------------------------------------------------------------------
     # Charge Management Methods
-    # ----------------------------------------------------------------------
     def list_charges(self, page: int = 1, size: int = 10, status: str = None,
                      from_date: str = None, to_date: str = None,
                      customer_id: str = None, payment_method_id: str = None,
@@ -382,9 +377,8 @@ class FlutterwaveService:
 
         response = requests.get(url=url, headers=headers)
         return response.json()
-    # ----------------------------------------------------------------------
+    
     # Card Payment Methods
-    # ----------------------------------------------------------------------
     def create_card_object(self, card_number: str, cvv: str, expiry_month: str, expiry_year: str,
                            nonce: str = None, access_token: str = None, trace_id: str = None,
                            unique_indempotency_key: str = None):
@@ -438,9 +432,7 @@ class FlutterwaveService:
         response = requests.post(url=url, headers=headers, data=json.dumps(data))
         return response.json()
 
-    # ----------------------------------------------------------------------
     # Charge Methods
-    # ----------------------------------------------------------------------
     def charge_card_object(self, reference: str, currency: str, customer_id: str,
                            payment_method_id: str, amount: float, redirect_url: str,
                            meta: dict = None, access_token: str = None, trace_id: str = None,
@@ -620,140 +612,136 @@ class FlutterwaveService:
         response = requests.post(url=url, headers=headers, data=json.dumps(payload))
         return response.json()
 
-    # ----------------------------------------------------------------------
-# Payment Plans Management (for Recurring Billing)
-# ----------------------------------------------------------------------
-def create_payment_plan(self, name: str, interval: str, amount: float = None,
-                        currency: str = "NGN", duration: int = None,
+    # Payment Plans Management (for Recurring Billing)
+    def create_payment_plan(self, name: str, interval: str, amount: float = None,
+                            currency: str = "NGN", duration: int = None,
+                            trace_id: str = None, access_token: str = None) -> Dict[str, Any]:
+        """
+        Create a payment plan that defines the billing schedule for subscriptions.
+        
+        :param name: The name of the plan (used in email reminders)
+        :param interval: Billing interval (e.g., daily, weekly, monthly, yearly, 
+                        or custom like "every five months")
+        :param amount: Amount to charge each time (optional, can be set when charging)
+        :param currency: Currency to charge in (default: NGN)
+        :param duration: How long the subscription lasts (in terms of intervals).
+                        If not specified, charges continue indefinitely.
+        :param trace_id: Unique identifier to track this operation
+        :param access_token: Optional access token (generated if not provided)
+        :return: API response containing the created payment plan
+        
+        Reference: https://developer.flutterwave.com/v3.0/reference/create-payment-plan-1
+        """
+        if access_token is None:
+            access_token = self.generate_access_token()
+        if trace_id is None:
+            trace_id = str(uuid.uuid4())
+        
+        url = f"{self.base_url}/payment-plans"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "X-Trace-Id": trace_id
+        }
+        
+        payload = {
+            "name": name,
+            "interval": interval,
+            "currency": currency
+        }
+        if amount is not None:
+            payload["amount"] = amount
+        if duration is not None:
+            payload["duration"] = duration
+        
+        response = requests.post(url=url, headers=headers, data=json.dumps(payload))
+        return response.json()
+
+    def list_payment_plans(self, page: int = 1, size: int = 10,
                         trace_id: str = None, access_token: str = None) -> Dict[str, Any]:
-    """
-    Create a payment plan that defines the billing schedule for subscriptions.
-    
-    :param name: The name of the plan (used in email reminders)
-    :param interval: Billing interval (e.g., daily, weekly, monthly, yearly, 
-                     or custom like "every five months")
-    :param amount: Amount to charge each time (optional, can be set when charging)
-    :param currency: Currency to charge in (default: NGN)
-    :param duration: How long the subscription lasts (in terms of intervals).
-                     If not specified, charges continue indefinitely.
-    :param trace_id: Unique identifier to track this operation
-    :param access_token: Optional access token (generated if not provided)
-    :return: API response containing the created payment plan
-    
-    Reference: https://developer.flutterwave.com/v3.0/reference/create-payment-plan-1
-    """
-    if access_token is None:
-        access_token = self.generate_access_token()
-    if trace_id is None:
-        trace_id = str(uuid.uuid4())
-    
-    url = f"{self.base_url}/payment-plans"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-        "X-Trace-Id": trace_id
-    }
-    
-    payload = {
-        "name": name,
-        "interval": interval,
-        "currency": currency
-    }
-    if amount is not None:
-        payload["amount"] = amount
-    if duration is not None:
-        payload["duration"] = duration
-    
-    response = requests.post(url=url, headers=headers, data=json.dumps(payload))
-    return response.json()
+        """
+        Retrieve a paginated list of all payment plans.
+        
+        :param page: Page number to retrieve (default: 1)
+        :param size: Number of plans per page (min: 10, max: 50, default: 10)
+        :param trace_id: Unique identifier to track this operation
+        :param access_token: Optional access token (generated if not provided)
+        :return: API response containing payment plans list and pagination info
+        """
+        if access_token is None:
+            access_token = self.generate_access_token()
+        if trace_id is None:
+            trace_id = str(uuid.uuid4())
+        
+        if page < 1:
+            page = 1
+        if size < 10:
+            size = 10
+        elif size > 50:
+            size = 50
+        
+        url = f"{self.base_url}/payment-plans"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "X-Trace-Id": trace_id
+        }
+        params = {"page": page, "size": size}
+        
+        response = requests.get(url=url, headers=headers, params=params)
+        return response.json()
 
-def list_payment_plans(self, page: int = 1, size: int = 10,
-                       trace_id: str = None, access_token: str = None) -> Dict[str, Any]:
-    """
-    Retrieve a paginated list of all payment plans.
-    
-    :param page: Page number to retrieve (default: 1)
-    :param size: Number of plans per page (min: 10, max: 50, default: 10)
-    :param trace_id: Unique identifier to track this operation
-    :param access_token: Optional access token (generated if not provided)
-    :return: API response containing payment plans list and pagination info
-    """
-    if access_token is None:
-        access_token = self.generate_access_token()
-    if trace_id is None:
-        trace_id = str(uuid.uuid4())
-    
-    if page < 1:
-        page = 1
-    if size < 10:
-        size = 10
-    elif size > 50:
-        size = 50
-    
-    url = f"{self.base_url}/payment-plans"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-        "X-Trace-Id": trace_id
-    }
-    params = {"page": page, "size": size}
-    
-    response = requests.get(url=url, headers=headers, params=params)
-    return response.json()
-
-def get_payment_plan(self, plan_id: str, trace_id: str = None,
-                     access_token: str = None) -> Dict[str, Any]:
-    """
-    Retrieve a specific payment plan by ID.
-    
-    :param plan_id: The ID of the payment plan to retrieve
-    :param trace_id: Unique identifier to track this operation
-    :param access_token: Optional access token (generated if not provided)
-    :return: API response containing the payment plan details
-    """
-    if access_token is None:
-        access_token = self.generate_access_token()
-    if trace_id is None:
-        trace_id = str(uuid.uuid4())
-    
-    url = f"{self.base_url}/payment-plans/{plan_id}"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-        "X-Trace-Id": trace_id
-    }
-    
-    response = requests.get(url=url, headers=headers)
-    return response.json()
-
-def cancel_payment_plan(self, plan_id: str, trace_id: str = None,
+    def get_payment_plan(self, plan_id: str, trace_id: str = None,
                         access_token: str = None) -> Dict[str, Any]:
-    """
-    Cancel a payment plan. This will also cancel all associated subscriptions.
-    
-    :param plan_id: The ID of the payment plan to cancel
-    :param trace_id: Unique identifier to track this operation
-    :param access_token: Optional access token (generated if not provided)
-    :return: API response confirming cancellation
-    """
-    if access_token is None:
-        access_token = self.generate_access_token()
-    if trace_id is None:
-        trace_id = str(uuid.uuid4())
-    
-    url = f"{self.base_url}/payment-plans/{plan_id}/cancel"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-        "X-Trace-Id": trace_id
-    }
-    
-    response = requests.put(url=url, headers=headers)
-    return response.json()
+        """
+        Retrieve a specific payment plan by ID.
+        
+        :param plan_id: The ID of the payment plan to retrieve
+        :param trace_id: Unique identifier to track this operation
+        :param access_token: Optional access token (generated if not provided)
+        :return: API response containing the payment plan details
+        """
+        if access_token is None:
+            access_token = self.generate_access_token()
+        if trace_id is None:
+            trace_id = str(uuid.uuid4())
+        
+        url = f"{self.base_url}/payment-plans/{plan_id}"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "X-Trace-Id": trace_id
+        }
+        
+        response = requests.get(url=url, headers=headers)
+        return response.json()
 
-    # ----------------------------------------------------------------------
+    def cancel_payment_plan(self, plan_id: str, trace_id: str = None,
+                            access_token: str = None) -> Dict[str, Any]:
+        """
+        Cancel a payment plan. This will also cancel all associated subscriptions.
+        
+        :param plan_id: The ID of the payment plan to cancel
+        :param trace_id: Unique identifier to track this operation
+        :param access_token: Optional access token (generated if not provided)
+        :return: API response confirming cancellation
+        """
+        if access_token is None:
+            access_token = self.generate_access_token()
+        if trace_id is None:
+            trace_id = str(uuid.uuid4())
+        
+        url = f"{self.base_url}/payment-plans/{plan_id}/cancel"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "X-Trace-Id": trace_id
+        }
+        
+        response = requests.put(url=url, headers=headers)
+        return response.json()
+
     # Subscription Management (for Recurring Payments)
-    # ----------------------------------------------------------------------
     def create_subscription(self, customer_id: str, payment_method_id: str, plan_id: str,
                             amount: float = None, start_date: str = None,
                             trace_id: str = None, access_token: str = None) -> Dict[str, Any]:
@@ -888,9 +876,7 @@ def cancel_payment_plan(self, plan_id: str, trace_id: str = None,
         response = requests.put(url=url, headers=headers)
         return response.json()
 
-    # ----------------------------------------------------------------------
     # Tokenized Charges (Card on File for Recurring Payments)
-    # ----------------------------------------------------------------------
     def tokenized_charge(self, token: str, amount: float, currency: str, email: str,
                         country: str = None, preauthorize: bool = False,
                         trace_id: str = None, access_token: str = None) -> Dict[str, Any]:

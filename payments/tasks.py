@@ -6,8 +6,8 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from orders.models import PaymentInstallment, Order
-from payments.models import Transaction, FlutterwaveCustomer
+from orders.models import PaymentInstallment
+from payments.models import Transaction
 from payments.utils import FlutterwaveService
 import logging
 

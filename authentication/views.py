@@ -37,8 +37,6 @@ class RegisterView(generics.GenericAPIView):
         
         # Generate OTP
         otp = OTP.generate_otp(user.email)
-        
-        # Send OTP email using template
         send_otp_email(user, otp.code)
         
         return Response(RegisterResponseSerializer({
@@ -73,8 +71,6 @@ class OTPSendView(generics.GenericAPIView):
 
         # Generate new OTP
         otp = OTP.generate_otp(email)
-        
-        # Send OTP email using template
         send_otp_email(user, otp.code)
         
         return Response(SuccessResponseSerializer({
@@ -105,11 +101,8 @@ class OTPVerifyView(generics.GenericAPIView):
                     "data": None
                 }).data, status=status.HTTP_400_BAD_REQUEST)
             
-            # Mark as verified
             otp.is_verified = True
             otp.save()
-            
-            # Activate user
             user = User.objects.filter(email=email).first()
             if not user:
                 from allauth.account.models import EmailAddress
@@ -132,7 +125,6 @@ class OTPVerifyView(generics.GenericAPIView):
                 except Exception:
                     pass
             
-            # Generate JWT tokens
             refresh = RefreshToken.for_user(user)
             
             return Response(LoginResponseSerializer({
@@ -252,7 +244,6 @@ class ChangeEmailRequestView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         new_email = serializer.validated_data['new_email']
 
-        # Reuse the OTP model keyed to the new email
         otp = OTP.generate_otp(new_email)
         send_change_email_otp(request.user, new_email, otp.code)
 
@@ -294,7 +285,6 @@ class ChangeEmailConfirmView(generics.GenericAPIView):
 
             try:
                 from allauth.account.models import EmailAddress
-                # Demote other primary emails
                 EmailAddress.objects.filter(user=user).update(primary=False)
                 EmailAddress.objects.update_or_create(
                     user=user,
@@ -368,7 +358,6 @@ class ForgotPasswordRequestView(generics.GenericAPIView):
             otp = OTP.generate_otp(email)
             send_forgot_password_email(user, otp.code)
 
-        # Always return 200 — don't reveal whether the email exists.
         return Response(SuccessResponseSerializer({
             "message": _("If this email is registered, a password-reset code has been sent."),
             "data": None
@@ -450,7 +439,6 @@ class GoogleSocialAuthView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         access_token = serializer.validated_data['access_token']
 
-        # Setup social auth backend
         strategy = load_strategy(request)
         backend = load_backend(
             strategy=strategy,
@@ -459,7 +447,6 @@ class GoogleSocialAuthView(generics.GenericAPIView):
         )
 
         try:
-            # This will validate the token and return the user
             user = backend.do_auth(access_token)
         except (AuthException, AuthFailed) as e:
             return Response(
@@ -478,7 +465,6 @@ class GoogleSocialAuthView(generics.GenericAPIView):
                 status=403
             )
 
-        # Generate JWT tokens (consistent with your LoginView)
         refresh = RefreshToken.for_user(user)
 
         return Response(LoginResponseSerializer({

@@ -302,7 +302,6 @@ class PaymentMethodViewSet(viewsets.GenericViewSet, viewsets.mixins.ListModelMix
         customer = instance.customer
         
         # Check if this is the last card and there are active installments
-        # We check orders associated with the user
         active_orders = customer.user.orders.filter(status__in=['active', 'pending'])
         has_unpaid_installments = False
         for order in active_orders:
@@ -470,12 +469,10 @@ class FlutterwaveWebhookView(views.APIView):
                 )
             
             # Process webhook asynchronously or synchronously
-            # For now, processing synchronously; can be moved to Celery task
             success = FlutterwaveWebhookService.process_webhook(payload)
             
             if not success:
                 # Log failure but still return 200 to prevent Flutterwave retries
-                # (we'll handle retries internally via WebhookEvent.retry_count)
                 pass
             
             # Always return 200 OK to acknowledge receipt

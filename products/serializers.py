@@ -53,7 +53,6 @@ class ProductSerializer(serializers.ModelSerializer):
         return getattr(settings, 'BASE_CURRENCY', 'USD')
 
 
-# Response wrappers for OpenAPI documentation
 class CategoryResponseSerializer(serializers.Serializer):
     message = serializers.CharField()
     data = CategorySerializer()

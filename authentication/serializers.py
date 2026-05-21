@@ -115,7 +115,6 @@ class LoginSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
-# SuccessResponseSerializer and SetLanguageSerializer have been moved to common.serializers
 
 class LoginResponseSerializer(serializers.Serializer):
     message = serializers.CharField()
@@ -131,7 +130,6 @@ class LogoutSerializer(serializers.Serializer):
 class RefreshTokenSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
-# ── Change Email ──────────────────────────────────────────────────────────────
 
 class ChangeEmailRequestSerializer(serializers.Serializer):
     """Step 1: authenticated user submits the new email they want."""
@@ -139,7 +137,6 @@ class ChangeEmailRequestSerializer(serializers.Serializer):
 
     def validate_new_email(self, value):
         request = self.context.get('request')
-        # Must not already be in use
         qs = User.objects.filter(email=value)
         if request and request.user.is_authenticated:
             qs = qs.exclude(pk=request.user.pk)
@@ -160,7 +157,6 @@ class ChangeEmailConfirmSerializer(serializers.Serializer):
     new_email = serializers.EmailField()
     code = serializers.CharField(max_length=6)
 
-# ── Change Password ───────────────────────────────────────────────────────────
 
 class ChangePasswordSerializer(serializers.Serializer):
     """Authenticated user changes their own password."""
@@ -179,7 +175,6 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"confirm_new_password": _("Passwords do not match.")})
         return attrs
 
-# ── Forgot Password ───────────────────────────────────────────────────────────
 
 class ForgotPasswordRequestSerializer(serializers.Serializer):
     """Step 1: unauthenticated user submits their registered email."""

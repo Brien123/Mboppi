@@ -218,7 +218,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def trending(self, request):
         country = getattr(request, 'country', None)
-        # Use 7-day time window for trending calculation
+        # 7-day time window for trending calculation
         seven_days_ago = timezone.now() - timedelta(days=7)
         
         count_filter = Q(view_logs__viewed_at__gte=seven_days_ago)

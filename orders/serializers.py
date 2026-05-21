@@ -65,7 +65,7 @@ class CheckoutSerializer(serializers.Serializer):
         limit_usd = profile.kyc_spending_limit_usd
 
         if total_base > limit_usd:
-            # Convert limit to local currency for a better error message
+            # Convert limit to local currency
             if country:
                 local_limit = round(limit_usd * country.exchange_rate, 2)
                 currency = country.currency_code

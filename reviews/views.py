@@ -76,7 +76,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         
-        # Return full serialized object
         full_serializer = ReviewSerializer(serializer.instance)
         return Response({
             "message": _("Review created successfully."),

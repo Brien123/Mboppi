@@ -77,7 +77,7 @@ class CheckoutIntegrationTest(APITestCase):
             last_name=self.user.last_name
         )
         if customer_response.get('status') == 'failed' and customer_response.get('error', {}).get('type') == 'RESOURCE_CONFLICT':
-            print("ℹ️ Customer already exists, retrieving existing...")
+            print("ℹCustomer already exists, retrieving existing...")
             search_response = self.fw.search_customers(email=self.user.email)
             print(f"Search Response: {search_response}")
             if search_response.get('status') == 'success' and search_response.get('data'):
@@ -90,7 +90,7 @@ class CheckoutIntegrationTest(APITestCase):
         else:
             self.assertEqual(customer_response.get('status'), 'success', f"Customer creation failed: {customer_response}")
             self.customer_id = customer_response["data"]["id"]
-        print(f"✅ Customer ID: {self.customer_id}")
+        print(f"Customer ID: {self.customer_id}")
 
         # Save to local DB
         fw_customer = FlutterwaveCustomer.objects.create(
@@ -125,7 +125,7 @@ class CheckoutIntegrationTest(APITestCase):
         self.assertEqual(card_response.get('status'), 'success', f"Card creation failed: {card_response}")
         
         payment_method_id = card_response["data"]["id"]
-        print(f"✅ Payment Method ID: {payment_method_id}")
+        print(f"Payment Method ID: {payment_method_id}")
 
         # Save to local DB
         PaymentMethod.objects.create(
@@ -172,8 +172,8 @@ class CheckoutIntegrationTest(APITestCase):
         transaction = Transaction.objects.get(order__order_id=response.data['data']['order_id'])
         self.assertIsNotNone(transaction.idempotency_key)
         self.assertIsNotNone(transaction.trace_id)
-        print(f"✅ Transaction Key: {transaction.idempotency_key}")
-        print(f"✅ Transaction Trace: {transaction.trace_id}")
+        print(f"Transaction Key: {transaction.idempotency_key}")
+        print(f"Transaction Trace: {transaction.trace_id}")
         
         print("\n" + "="*60)
         print("TEST COMPLETED")

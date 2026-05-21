@@ -58,7 +58,6 @@ class UpdateCartItemSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(min_value=1)
 
     def validate(self, data):
-        # We'll check stock against the item's product in the view
         return data
 
 class CartResponseSerializer(serializers.Serializer):
